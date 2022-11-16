@@ -14,12 +14,13 @@
 class Detector
 {
     private:
+    ros::NodeHandle nh;
     ros::Subscriber img_sub;
     ros::Publisher img_pub;
     ros::Publisher img_data_pub;
-    cppflow::model detector;
+    std::shared_ptr<cppflow::model> detector;
     public:
-    Detector(std::string model_path,std::string topic);
+    Detector(std::string model_path,std::string topic,ros::NodeHandle& n);
     void callback(const sensor_msgs::ImageConstPtr& img);
 
 };
