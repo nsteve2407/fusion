@@ -10,7 +10,7 @@
 // Other
 #include<string>
 #include<opencv2/core.hpp>
-
+#include<vector>
 class Detector
 {
     private:
@@ -19,9 +19,15 @@ class Detector
     ros::Publisher img_pub;
     ros::Publisher img_data_pub;
     std::shared_ptr<cppflow::model> detector;
+    std::vector<uint8_t> img_vector;
+    cv_bridge::CvImagePtr cvImgptr;
+    cv::Mat reduced_size_image;
+    int img_rows, img_cols, img_channels;
+
     public:
     Detector(std::string model_path,std::string topic,ros::NodeHandle& n);
     void callback(const sensor_msgs::ImageConstPtr& img);
+    cppflow::tensor Mat2Tensor(const cv::Mat& mat, int& rows, int& cols, int& channels);
 
 };
 

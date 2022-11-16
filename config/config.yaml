@@ -1,2 +1,5 @@
 img_topic : "/image"
 ssd_model_path : "/home/mkz/catkin_ws/src/fusion/model/ssdResnNet50/saved_model"
+rows: 640
+columns: 640
+channels: 3
