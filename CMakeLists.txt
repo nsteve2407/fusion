@@ -120,14 +120,20 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
+# target_include_directories(
+# ssd_detector_node PUBLIC
+# cppflow::cppflow
+# )
 include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
+  /home/mkz/catkin_ws/src/fusion/include
+
 )
 
 ## Declare a C++ library
 add_library(detector
-  src/fusion/src/camera_detector/detector.cpp
+  src/camera_detector/detector.cpp
 )
 
 ## Add cmake target dependencies of the library
@@ -138,7 +144,7 @@ add_library(detector
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(ssd_detector_node src/camera_detector/camera_ssd_detector.cpp)
+add_executable(ssd_detector_node src/camera_detector/ssd_detector.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -154,6 +160,7 @@ add_executable(ssd_detector_node src/camera_detector/camera_ssd_detector.cpp)
 target_link_libraries(ssd_detector_node
   ${catkin_LIBRARIES}
   detector
+  cppflow::cppflow
 )
 
 #############
