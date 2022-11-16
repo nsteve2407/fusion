@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+<arg name="config_file" default="/home/mkz/catkin_ws/src/fusion/config/config.yaml"/>
+<rosparam command="load" file="$(arg config_file" ns="ssd_detector"/>
+
+<node name="ssd_detector" pkg="fusion" type="ssd_detector_node" output="screen"/>
+
+</launch>
