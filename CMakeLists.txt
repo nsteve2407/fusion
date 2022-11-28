@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(fusion)
-
+set(CMAKE_CXX_STANDARD 14)
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
 
@@ -9,14 +9,33 @@ project(fusion)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   cv_bridge
+  image_transport
   roscpp
-  rospy
   sensor_msgs
+  std_msgs
   vision_msgs
 )
 
 find_package(cppflow REQUIRED)
+find_package(OpenCV REQUIRED)
+find_package(Boost REQUIRED)
 
+###################################
+## catkin specific configuration ##
+###################################
+## The catkin_package macro generates cmake config files for your package
+## Declare things to be passed to dependent projects
+## INCLUDE_DIRS: uncomment this if you package contains header files
+## LIBRARIES: libraries you create in this project that dependent projects also need
+## CATKIN_DEPENDS: catkin_packages dependent projects also need
+## DEPENDS: system dependencies of this project that dependent projects also need
+catkin_package(
+ INCLUDE_DIRS include
+ LIBRARIES compute_cdist
+ CATKIN_DEPENDS roscpp vision_msgs 
+#  DEPENDS assimp Eigen mlpack
+)
+include_directories(SYSTEM ${OpenCV_INCLUDE_DIRS})
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -107,12 +126,12 @@ find_package(cppflow REQUIRED)
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
-catkin_package(
+# catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES fusion2
-#  CATKIN_DEPENDS cv_bridge rocpp rospy sensor_msgs vision_msgs
-#  DEPENDS system_lib
-)
+#  CATKIN_DEPENDS cv_bridge roscpp sensor_msgs vision_msgs
+#  DEPENDS OpenCV
+# )
 
 ###########
 ## Build ##
@@ -130,7 +149,7 @@ include_directories(
   /home/mkz/catkin_ws/src/fusion/include
 
 )
-
+include_directories( ${OpenCV_INCLUDE_DIRS} )
 ## Declare a C++ library
 add_library(detector
   src/camera_detector/detector.cpp
@@ -144,7 +163,7 @@ add_library(detector
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(ssd_detector_node src/camera_detector/ssd_detector.cpp)
+add_executable(ssd_detector src/camera_detector/ssd_detector.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -157,11 +176,16 @@ add_executable(ssd_detector_node src/camera_detector/ssd_detector.cpp)
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(ssd_detector_node
-  ${catkin_LIBRARIES}
+target_link_libraries(ssd_detector 
+${catkin_LIBRARIES}
   detector
   cppflow::cppflow
+  /opt/ros/noetic/lib/libcv_bridge.so
 )
+# ${OpenCV_LIBS}
+# ${OpenCV_INCLUDE_DIRS}  
+# ${OpenCV_LIBRARIES}
+# ${Boost_LIBRARIES}
 
 #############
 ## Install ##

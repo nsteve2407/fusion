@@ -12,5 +12,10 @@ int main(int argc,char** argv)
 
     std::shared_ptr<Detector> ssd(new Detector(model_full_path,img_topic,nh));
 
+    while(ros::ok())
+    {
+        ros::spinOnce();
+    }
+
     return 0;
 }

@@ -18,20 +18,35 @@ cppflow::tensor Detector::Mat2Tensor(const cv::Mat& mat, int& rows, int& cols, i
 {
     img_vector.assign(mat.data,mat.data+mat.total()*channels);
     auto img_tensor = cppflow::tensor(img_vector,{rows,cols,channels});
-    img_tensor = cppflow::cast(img_tensor,TF_UINT8,TF_FLOAT);
+      
+    // img_tensor = cppflow::cast(img_tensor,TF_FLOAT,TF_UINT8);
     img_tensor = cppflow::expand_dims(img_tensor,0);
+
     
     return img_tensor;
 }
 
 void Detector::callback(const sensor_msgs::ImageConstPtr& img)
 {
-    // Convert Image msg to CV
-    cvImgptr = cv_bridge::toCvCopy(img,sensor_msgs::image_encodings::BGR8);
-    
+    // Convert Image msg to CV   
+   cvImgptr = cv_bridge::toCvCopy(img,"bgr8");
+  
     //Resize to 640x640
     cv::resize(cvImgptr->image,reduced_size_image,cv::Size(img_rows,img_cols),cv::INTER_LINEAR);
 
     cppflow::tensor img_tensor = Mat2Tensor(reduced_size_image,img_rows,img_cols,img_channels);
+
+    // Inference
+    auto output = (*detector)({{"serving_default_input_tensor:0", img_tensor}},{"StatefulPartitionedCall:0",
+                                                                                "StatefulPartitionedCall:1",
+                                                                                "StatefulPartitionedCall:2"
+                                                                                "StatefulPartitionedCall:3"
+                                                                                "StatefulPartitionedCall:4"
+                                                                                "StatefulPartitionedCall:5"
+                                                                                "StatefulPartitionedCall:6",
+                                                                                "StatefulPartitionedCall:7"});
+
+    std::cout<<"Output:\n";
+    std::cout<<output[4];
 
 }

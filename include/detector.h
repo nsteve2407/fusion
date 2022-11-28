@@ -10,6 +10,7 @@
 // Other
 #include<string>
 #include<opencv2/core.hpp>
+#include "opencv2/core/types_c.h"
 #include<vector>
 class Detector
 {
