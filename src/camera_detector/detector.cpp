@@ -39,10 +39,10 @@ void Detector::callback(const sensor_msgs::ImageConstPtr& img)
     // Inference
     auto output = (*detector)({{"serving_default_input_tensor:0", img_tensor}},{"StatefulPartitionedCall:0",
                                                                                 "StatefulPartitionedCall:1",
-                                                                                "StatefulPartitionedCall:2"
-                                                                                "StatefulPartitionedCall:3"
-                                                                                "StatefulPartitionedCall:4"
-                                                                                "StatefulPartitionedCall:5"
+                                                                                "StatefulPartitionedCall:2",
+                                                                                "StatefulPartitionedCall:3",
+                                                                                "StatefulPartitionedCall:4",
+                                                                                "StatefulPartitionedCall:5",
                                                                                 "StatefulPartitionedCall:6",
                                                                                 "StatefulPartitionedCall:7"});
 
