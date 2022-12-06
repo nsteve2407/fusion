@@ -9,7 +9,7 @@ Detector::Detector(std::string model_path,std::string topic,ros::NodeHandle& n)
     nh.getParam("/ssd_detector/columns",img_cols);
     nh.getParam("/ssd_detector/channels",img_channels);
     img_pub = nh.advertise<sensor_msgs::Image>("/img_with_bbox",100);
-    img_data_pub = nh.advertise<vision_msgs::Detection2DArray>("/img_detections",100);
+    img_data_pub = nh.advertise<vision_msgs::Detection2DArray>("/detection_msgs",100);
     img_sub = nh.subscribe<sensor_msgs::Image>(topic,100,&Detector::callback,this);
     ROS_INFO("Subscribers and Publishers successfully loaded");
     detections.resize(3);
@@ -31,18 +31,40 @@ void Detector::parse_detections(std::vector<cppflow::tensor>& det)
     std::vector<float> boxes_r = det[0].get_data<float>();
     std::vector<float> classes = det[1].get_data<float>();
     std::vector<float> scores = det[2].get_data<float>();
-
-
+    detection_msg.detections.clear();
+    detection_msg.detections.resize(100);
+    int det_count = 0;
+    int x1=0;
+    int y1=0;
+    int x2=0; 
+    int y2=0;
+    int idx=0;
     for(int i=0;i<100;i++)
     {
-        if(scores[i]>0.5)
+        if(scores[i]>0.3)
         {
-        int idx = std::max(0,(i*4) -1);
-        cv::rectangle(cv::InputOutputArray(reduced_size_image),cv::Point(int(boxes_r[idx+1]*640),int(boxes_r[idx]*640)),
-                    cv::Point(int(boxes_r[idx+3]*640),int(boxes_r[idx+2]*640)),cv::Scalar(255,0,0),3); 
+        idx = i*4;
+        x1 = static_cast<int>(boxes_r[idx]*640);
+        y1 = static_cast<int>(boxes_r[idx+1]*640);
+        x2 = static_cast<int>(boxes_r[idx+2]*640);
+        y2 = static_cast<int>(boxes_r[idx+3]*640);
+
+        cv::rectangle(cv::InputOutputArray(reduced_size_image),cv::Point(y1,x1),
+                    cv::Point(y2,x2),cv::Scalar(255,0,0),2); 
+        
+        detection_msg.detections[det_count].bbox.center.x = (x1+x2)/2;
+        detection_msg.detections[det_count].bbox.center.y = (y1+y2)/2;
+        detection_msg.detections[det_count].bbox.size_x = x2-x1;
+        detection_msg.detections[det_count].bbox.size_y = y2-y1;
+        detection_msg.detections[det_count].results.resize(1);
+        detection_msg.detections[det_count].results[0].id = int(classes[i]);
+        detection_msg.detections[det_count].results[0].score = scores[i];       
+        det_count+=1;
+        // std::cout<<"\nx1: "<<x1<<" y1: "<<y1;
         }
 
     }
+    detection_msg.detections.resize(det_count);
 }
 
 void Detector::callback(const sensor_msgs::ImageConstPtr& img)
@@ -76,5 +98,8 @@ void Detector::callback(const sensor_msgs::ImageConstPtr& img)
     cbr.image = reduced_size_image;
     cbr.header = img->header;
     cbr.encoding = sensor_msgs::image_encodings::BGR8;
+
+    detection_msg.header = img->header;
     img_pub.publish(cbr.toImageMsg());
+    img_data_pub.publish(detection_msg);
 }

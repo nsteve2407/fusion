@@ -8,7 +8,7 @@
             "name": "ROS: Launch",
             "type": "ros",
             "request": "launch",
-            "target": "/home/mkz/catkin_ws/src/fusion/launch/project_lidar_to_cam.launch"
+            "target": "/home/mkz/catkin_ws/src/fusion/launch/ssd_detector.launch"
         },
         {
             "name": "Python: Current File",

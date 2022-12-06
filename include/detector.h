@@ -27,6 +27,7 @@ class Detector
     cv::Mat reduced_size_image;
     int img_rows, img_cols, img_channels;
     std::vector<cppflow::tensor> detections;
+    vision_msgs::Detection2DArray detection_msg;
 
     public:
     Detector(std::string model_path,std::string topic,ros::NodeHandle& n);
