@@ -19,6 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(cppflow REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(Boost REQUIRED)
+find_package(Eigen3 3.4 REQUIRED NO_MODULE)
 
 ###################################
 ## catkin specific configuration ##
@@ -181,6 +182,7 @@ ${catkin_LIBRARIES}
   detector
   cppflow::cppflow
   /opt/ros/noetic/lib/libcv_bridge.so
+  Eigen3::Eigen
 )
 # ${OpenCV_LIBS}
 # ${OpenCV_INCLUDE_DIRS}  

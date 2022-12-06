@@ -12,6 +12,8 @@
 #include<opencv2/core.hpp>
 #include "opencv2/core/types_c.h"
 #include<vector>
+#include<eigen3/Eigen/Dense>
+
 class Detector
 {
     private:
@@ -24,11 +26,13 @@ class Detector
     cv_bridge::CvImagePtr cvImgptr;
     cv::Mat reduced_size_image;
     int img_rows, img_cols, img_channels;
+    std::vector<cppflow::tensor> detections;
 
     public:
     Detector(std::string model_path,std::string topic,ros::NodeHandle& n);
     void callback(const sensor_msgs::ImageConstPtr& img);
     cppflow::tensor Mat2Tensor(const cv::Mat& mat, int& rows, int& cols, int& channels);
+    void parse_detections(std::vector<cppflow::tensor>& det);
 
 };
 
